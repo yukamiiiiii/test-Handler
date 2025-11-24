@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Marketing Business Task Handler</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    /* Custom scrollbars */
+    .scroll-thin::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .scroll-thin::-webkit-scrollbar-thumb {
+      background-color: rgba(148, 163, 184, 0.7);
+      border-radius: 9999px;
+    }
+    .scroll-thin::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-semibold tracking-tight">Digital Marketing Task Handler</h1>
+        <p class="text-xs md:text-sm text-slate-400">Plan, prioritize, and track your campaigns, content, and analytics work.</p>
+      </div>
+      <div class="hidden sm:flex items-center gap-3 text-xs text-slate-400">
+        <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Active</div>
+        <button id="exportBtn" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px]">Export JSON</button>
+        <button id="helpBtn" class="p-1.5 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300" title="How to host">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-6xl mx-auto w-full px-4 py-6 grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.1fr)] gap-6">
+    <!-- Task Creator -->
+    <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 md:p-5 flex flex-col gap-4">
+      <div class="flex items-center justify-between gap-3 mb-1">
+        <h2 class="font-semibold text-sm md:text-base">Create Marketing Task</h2>
+        <span id="taskCount" class="text-[11px] text-slate-400">0 tasks</span>
+      </div>
+
+      <form id="taskForm" class="space-y-3 text-sm">
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] uppercase tracking-wide text-slate-400 mb-1">Task title</label>
+            <input id="titleInput" type="text" required placeholder="e.g. Launch Instagram ad set for Q4" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-800 focus:border-sky-500 focus:outline-none text-sm" />
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase tracking-wide text-slate-400 mb-1">Category</label>
+            <select id="categoryInput" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-800 focus:border-sky-500 focus:outline-none text-sm">
+              <option value="Campaign">Campaign</option>
+              <option value="Content">Content</option>
+              <option value="SEO">SEO</option>
+              <option value="Social Media">Social Media</option>
+              <option value="Email">Email</option>
+              <option value="Analytics">Analytics</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] uppercase tracking-wide text-slate-400 mb-1">Details / brief</label>
+          <textarea id="descriptionInput" rows="3" placeholder="Key objectives, channels, audience, budget notes..." class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-800 focus:border-sky-500 focus:outline-none text-sm resize-none"></textarea>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] uppercase tracking-wide text-slate-400 mb-1">Priority</label>
+            <div class="flex gap-2 text-[11px]">
+              <button type="button" data-priority="Low" class="priority-chip px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/70">Low</button>
+              <button type="button" data-priority="Medium" class="priority-chip px-3 py-1.5 rounded-full border border-sky-500/70 bg-sky-500/10">Medium</button>
+              <button type="button" data-priority="High" class="priority-chip px-3 py-1.5 rounded-full border border-rose-500/80 bg-rose-500/10">High</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase tracking-wide text-slate-400 mb-1">Channel</label>
+            <input id="channelInput" type="text" placeholder="e.g. Meta Ads, Google Ads, TikTok, Email" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-800 focus:border-sky-500 focus:outline-none text-sm" />
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase tracking-wide text-slate-400 mb-1">Due date</label>
+            <input id="dueInput" type="date" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-800 focus:border-sky-500 focus:outline-none text-sm" />
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <div class="flex items-center gap-2 text-[11px] text-slate-400">
+            <input id="quickTemplateToggle" type="checkbox" class="rounded border-slate-600 bg-slate-900 text-sky-500" />
+            <span>Use quick templates</span>
+          </div>
+          <div class="flex gap-2 text-[11px]">
+            <button id="clearBtn" type="button" class="px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">Clear</button>
+            <button type="submit" class="px-4 py-1.5 rounded-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-medium">Add task</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="templateBar" class="hidden border-t border-slate-800 pt-3 mt-1 text-[11px] text-slate-300">
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="text-slate-500">Templates:</span>
+          <button class="template-chip px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-700" data-template="Launch paid campaign for new offer.">Paid campaign launch</button>
+          <button class="template-chip px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-700" data-template="Create content calendar for next 30 days.">Content calendar</button>
+          <button class="template-chip px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-700" data-template="Audit website SEO and fix top priority issues.">SEO audit</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Task Board + Insights -->
+    <section class="flex flex-col gap-4">
+      <!-- Filters / KPIs -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 md:p-5 flex flex-col gap-3 text-xs">
+        <div class="flex flex-wrap justify-between gap-3 items-center">
+          <div class="flex flex-wrap gap-2 items-center">
+            <button data-status-filter="All" class="status-filter px-3 py-1.5 rounded-full bg-slate-100 text-slate-900 font-medium">All</button>
+            <button data-status-filter="Backlog" class="status-filter px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700">Backlog</button>
+            <button data-status-filter="In Progress" class="status-filter px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700">In Progress</button>
+            <button data-status-filter="Done" class="status-filter px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700">Done</button>
+          </div>
+          <div class="flex flex-wrap gap-2 items-center">
+            <select id="categoryFilter" class="px-3 py-1.5 rounded-full bg-slate-950 border border-slate-700 text-[11px]">
+              <option value="All">All categories</option>
+              <option value="Campaign">Campaign</option>
+              <option value="Content">Content</option>
+              <option value="SEO">SEO</option>
+              <option value="Social Media">Social Media</option>
+              <option value="Email">Email</option>
+              <option value="Analytics">Analytics</option>
+              <option value="Other">Other</option>
+            </select>
+            <select id="sortSelect" class="px-3 py-1.5 rounded-full bg-slate-950 border border-slate-700 text-[11px]">
+              <option value="createdDesc">Newest first</option>
+              <option value="createdAsc">Oldest first</option>
+              <option value="priority">Priority</option>
+              <option value="due">Due date</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mt-2 text-[11px]">
+          <div class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col gap-0.5">
+            <span class="text-slate-400">Active this week</span>
+            <span id="kpiActive" class="text-sm font-semibold">0</span>
+          </div>
+          <div class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col gap-0.5">
+            <span class="text-slate-400">High priority</span>
+            <span id="kpiHigh" class="text-sm font-semibold">0</span>
+          </div>
+          <div class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col gap-0.5">
+            <span class="text-slate-400">Completed</span>
+            <span id="kpiDone" class="text-sm font-semibold">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task List -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-3 md:p-4 flex-1 flex flex-col min-h-[260px]">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="font-semibold text-sm md:text-base">Task Board</h2>
+          <button id="seedDemoBtn" class="text-[11px] px-3 py-1.5 rounded-full bg-slate-950 border border-slate-700 text-slate-300">Load sample tasks</button>
+        </div>
+
+        <div id="emptyState" class="flex-1 flex flex-col items-center justify-center text-center text-xs text-slate-400 py-6">
+          <p class="mb-1">No tasks yet. Start by adding your first campaign, content, or analytics task.</p>
+          <p>Tip: Use templates to speed up your workflow.</p>
+        </div>
+
+        <div id="taskList" class="hidden flex-1 space-y-2 overflow-y-auto scroll-thin pr-1 text-xs"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-900/80 mt-4 text-[11px] text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+      <span>Digital Marketing Task Handler · Single-page workspace</span>
+      <span class="text-slate-600">Use locally in your browser. Data is stored in localStorage.</span>
+    </div>
+  </footer>
+
+  <!-- Help Modal -->
+  <div id="helpModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <button id="closeHelpBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <h3 class="text-lg font-semibold mb-4 text-white">How to Host This App</h3>
+      <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+        <p>This is a <strong>static HTML file</strong>. It works completely in the browser without a backend server. You can host it for free on GitHub Pages.</p>
+        
+        <div class="bg-slate-950/50 p-3 rounded-xl border border-slate-800">
+          <h4 class="font-medium text-sky-400 mb-2">Steps to Host on GitHub:</h4>
+          <ol class="list-decimal list-inside space-y-1 text-xs text-slate-400">
+            <li>Create a new Repository on GitHub (e.g., "my-task-app").</li>
+            <li>Upload this <code>index.html</code> file to the repository.</li>
+            <li>Go to <strong>Settings</strong> > <strong>Pages</strong> in the repository menu.</li>
+            <li>Under "Build and deployment", select <strong>main</strong> branch as source.</li>
+            <li>Click <strong>Save</strong>. GitHub will give you a URL (e.g., yourusername.github.io/my-task-app).</li>
+          </ol>
+        </div>
+
+        <p class="text-xs text-slate-500">
+          <strong>Note:</strong> Your data is stored in your browser's LocalStorage. If you clear your cache or switch browsers, your tasks won't transfer automatically. Use the "Export JSON" button to backup your data.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'dm_task_handler_v1';
+
+    const taskForm = document.getElementById('taskForm');
+    const titleInput = document.getElementById('titleInput');
+    const categoryInput = document.getElementById('categoryInput');
+    const descriptionInput = document.getElementById('descriptionInput');
+    const channelInput = document.getElementById('channelInput');
+    const dueInput = document.getElementById('dueInput');
+    const quickTemplateToggle = document.getElementById('quickTemplateToggle');
+    const templateBar = document.getElementById('templateBar');
+    const clearBtn = document.getElementById('clearBtn');
+
+    const taskListEl = document.getElementById('taskList');
+    const emptyStateEl = document.getElementById('emptyState');
+    const taskCountEl = document.getElementById('taskCount');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortSelect = document.getElementById('sortSelect');
+    const exportBtn = document.getElementById('exportBtn');
+    const seedDemoBtn = document.getElementById('seedDemoBtn');
+    const helpBtn = document.getElementById('helpBtn');
+    const closeHelpBtn = document.getElementById('closeHelpBtn');
+    const helpModal = document.getElementById('helpModal');
+
+    const kpiActive = document.getElementById('kpiActive');
+    const kpiHigh = document.getElementById('kpiHigh');
+    const kpiDone = document.getElementById('kpiDone');
+
+    const statusFilterButtons = Array.from(document.querySelectorAll('.status-filter'));
+    const priorityChips = Array.from(document.querySelectorAll('.priority-chip'));
+    const templateChips = Array.from(document.querySelectorAll('.template-chip'));
+
+    let tasks = [];
+    let activePriority = 'Medium';
+    let activeStatusFilter = 'All';
+
+    function saveTasks() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function loadTasks() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        tasks = raw ? JSON.parse(raw) : [];
+      } catch {
+        tasks = [];
+      }
+    }
+
+    function updateKPIs() {
+      const now = new Date();
+      const weekAhead = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const active = tasks.filter(t => t.status !== 'Done' && (!t.dueDate || new Date(t.dueDate) <= weekAhead)).length;
+      const high = tasks.filter(t => t.priority === 'High' && t.status !== 'Done').length;
+      const done = tasks.filter(t => t.status === 'Done').length;
+      kpiActive.textContent = active;
+      kpiHigh.textContent = high;
+      kpiDone.textContent = done;
+    }
+
+    function renderTasks() {
+      if (!tasks.length) {
+        taskListEl.classList.add('hidden');
+        emptyStateEl.classList.remove('hidden');
+        taskCountEl.textContent = '0 tasks';
+        updateKPIs();
+        return;
+      }
+
+      let filtered = tasks.slice();
+
+      if (activeStatusFilter !== 'All') {
+        filtered = filtered.filter(t => t.status === activeStatusFilter);
+      }
+
+      const categoryVal = categoryFilter.value;
+      if (categoryVal !== 'All') {
+        filtered = filtered.filter(t => t.category === categoryVal);
+      }
+
+      const sortBy = sortSelect.value;
+      filtered.sort((a, b) => {
+        if (sortBy === 'createdAsc') return a.createdAt - b.createdAt;
+        if (sortBy === 'createdDesc') return b.createdAt - a.createdAt;
+        if (sortBy === 'priority') {
+          const order = { High: 0, Medium: 1, Low: 2 };
+          return order[a.priority] - order[b.priority];
+        }
+        if (sortBy === 'due') {
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return new Date(a.dueDate) - new Date(b.dueDate);
+        }
+        return 0;
+      });
+
+      taskListEl.innerHTML = '';
+
+      filtered.forEach(task => {
+        const item = document.createElement('article');
+        item.className = 'rounded-xl border border-slate-800 bg-slate-950/80 p-3 flex flex-col gap-2 group hover:border-sky-500/60 transition-colors';
+
+        const statusColors = {
+          'Backlog': 'bg-slate-800 text-slate-200',
+          'In Progress': 'bg-amber-500/10 text-amber-300 border border-amber-400/60',
+          'Done': 'bg-emerald-500/10 text-emerald-300 border border-emerald-400/60'
+        };
+        const priorityColors = {
+          'High': 'bg-rose-500/10 text-rose-300 border border-rose-400/60',
+          'Medium': 'bg-sky-500/10 text-sky-300 border border-sky-400/60',
+          'Low': 'bg-slate-800 text-slate-200 border border-slate-600'
+        };
+
+        const dueLabel = task.dueDate ? new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
+
+        item.innerHTML = `
+          <div class="flex justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-medium text-[13px] truncate">${task.title}</h3>
+              <p class="text-[11px] text-slate-400 line-clamp-2 mt-0.5">${task.description || 'No details provided.'}</p>
+            </div>
+            <div class="flex flex-col items-end gap-1 text-[10px]">
+              <span class="px-2 py-0.5 rounded-full ${statusColors[task.status]} whitespace-nowrap">${task.status}</span>
+              <button data-id="${task.id}" data-action="delete" class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-rose-400">Delete</button>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-300">
+            <div class="flex flex-wrap gap-1.5 items-center">
+              <span class="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700">${task.category}</span>
+              ${task.channel ? `<span class="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700">${task.channel}</span>` : ''}
+              <span class="px-2 py-0.5 rounded-full ${priorityColors[task.priority]}">${task.priority} priority</span>
+              ${dueLabel ? `<span class="px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700">Due ${dueLabel}</span>` : ''}
+            </div>
+            <div class="flex gap-1.5 items-center">
+              <button data-id="${task.id}" data-status="Backlog" data-action="setStatus" class="px-2 py-0.5 rounded-full border border-slate-700 hover:border-slate-500 ${task.status === 'Backlog' ? 'bg-slate-800' : 'bg-slate-950'}">Backlog</button>
+              <button data-id="${task.id}" data-status="In Progress" data-action="setStatus" class="px-2 py-0.5 rounded-full border border-slate-700 hover:border-slate-500 ${task.status === 'In Progress' ? 'bg-slate-800' : 'bg-slate-950'}">In progress</button>
+              <button data-id="${task.id}" data-status="Done" data-action="setStatus" class="px-2 py-0.5 rounded-full border border-slate-700 hover:border-slate-500 ${task.status === 'Done' ? 'bg-slate-800' : 'bg-slate-950'}">Done</button>
+            </div>
+          </div>
+        `;
+
+        taskListEl.appendChild(item);
+      });
+
+      taskListEl.classList.remove('hidden');
+      emptyStateEl.classList.add('hidden');
+      taskCountEl.textContent = `${tasks.length} task${tasks.length === 1 ? '' : 's'}`;
+      updateKPIs();
+    }
+
+    function resetForm() {
+      taskForm.reset();
+      activePriority = 'Medium';
+      priorityChips.forEach(chip => {
+        chip.classList.remove('border-sky-500/70', 'bg-sky-500/10', 'border-rose-500/80', 'bg-rose-500/10');
+        chip.classList.add('border-slate-700', 'bg-slate-900/70');
+        if (chip.dataset.priority === 'Medium') {
+          chip.classList.remove('border-slate-700', 'bg-slate-900/70');
+          chip.classList.add('border-sky-500/70', 'bg-sky-500/10');
+        }
+      });
+    }
+
+    taskForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = titleInput.value.trim();
+      if (!title) return;
+
+      const task = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        title,
+        category: categoryInput.value,
+        description: descriptionInput.value.trim(),
+        channel: channelInput.value.trim(),
+        dueDate: dueInput.value || null,
+        priority: activePriority,
+        status: 'Backlog',
+        createdAt: Date.now()
+      };
+
+      tasks.push(task);
+      saveTasks();
+      renderTasks();
+      resetForm();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      resetForm();
+    });
+
+    priorityChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        activePriority = chip.dataset.priority;
+        priorityChips.forEach(c => {
+          c.classList.remove('border-sky-500/70', 'bg-sky-500/10', 'border-rose-500/80', 'bg-rose-500/10');
+          c.classList.add('border-slate-700', 'bg-slate-900/70');
+        });
+        if (activePriority === 'High') {
+          chip.classList.remove('border-slate-700', 'bg-slate-900/70');
+          chip.classList.add('border-rose-500/80', 'bg-rose-500/10');
+        } else if (activePriority === 'Medium') {
+          chip.classList.remove('border-slate-700', 'bg-slate-900/70');
+          chip.classList.add('border-sky-500/70', 'bg-sky-500/10');
+        }
+      });
+    });
+
+    quickTemplateToggle.addEventListener('change', () => {
+      templateBar.classList.toggle('hidden', !quickTemplateToggle.checked);
+    });
+
+    templateChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const template = chip.dataset.template || '';
+        if (!descriptionInput.value.trim()) {
+          descriptionInput.value = template;
+        } else {
+          descriptionInput.value += (descriptionInput.value.endsWith('\n') ? '' : '\n') + template;
+        }
+      });
+    });
+
+    statusFilterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeStatusFilter = btn.dataset.statusFilter;
+        statusFilterButtons.forEach(b => {
+          if (b === btn) {
+            b.classList.add('bg-slate-100', 'text-slate-900', 'font-medium');
+            b.classList.remove('bg-slate-900', 'border-slate-700');
+          } else {
+            b.classList.remove('bg-slate-100', 'text-slate-900', 'font-medium');
+            b.classList.add('bg-slate-900', 'border-slate-700');
+          }
+        });
+        renderTasks();
+      });
+    });
+
+    categoryFilter.addEventListener('change', renderTasks);
+    sortSelect.addEventListener('change', renderTasks);
+
+    taskListEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      if (!id || !action) return;
+
+      const idx = tasks.findIndex(t => t.id === id);
+      if (idx === -1) return;
+
+      if (action === 'delete') {
+        tasks.splice(idx, 1);
+      } else if (action === 'setStatus') {
+        const status = btn.dataset.status;
+        tasks[idx].status = status;
+      }
+
+      saveTasks();
+      renderTasks();
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'digital-marketing-tasks.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // Help Modal Logic
+    function toggleHelp(show) {
+      if (show) {
+        helpModal.classList.remove('hidden');
+      } else {
+        helpModal.classList.add('hidden');
+      }
+    }
+    
+    helpBtn.addEventListener('click', () => toggleHelp(true));
+    closeHelpBtn.addEventListener('click', () => toggleHelp(false));
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) toggleHelp(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !helpModal.classList.contains('hidden')) toggleHelp(false);
+    });
+
+    seedDemoBtn.addEventListener('click', () => {
+      if (tasks.length && !confirm('Replace existing tasks with sample data?')) return;
+      const today = new Date();
+      function offset(days) {
+        const d = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
+        return d.toISOString().slice(0, 10);
+      }
+      tasks = [
+        {
+          id: 'demo1',
+          title: 'Launch Black Friday Meta Ads campaign',
+          category: 'Campaign',
+          description: 'Objective: drive ROAS > 4. Target lookalike audiences from purchasers, retarget 30-day engagers.',
+          channel: 'Meta Ads',
+          dueDate: offset(3),
+          priority: 'High',
+          status: 'In Progress',
+          createdAt: Date.now() - 3600_000
+        },
+        {
+          id: 'demo2',
+          title: 'Plan December content calendar',
+          category: 'Content',
+          description: 'Include reels, carousels, and email topics. Align with product launches and promos.',
+          channel: 'Instagram, TikTok, Email',
+          dueDate: offset(7),
+          priority: 'Medium',
+          status: 'Backlog',
+          createdAt: Date.now() - 7200_000
+        },
+        {
+          id: 'demo3',
+          title: 'SEO audit for core product pages',
+          category: 'SEO',
+          description: 'Check technical issues, on-page optimization, and internal linking for top 20 landing pages.',
+          channel: 'Organic search',
+          dueDate: offset(10),
+          priority: 'High',
+          status: 'Backlog',
+          createdAt: Date.now() - 5400_000
+        },
+        {
+          id: 'demo4',
+          title: 'Weekly performance report',
+          category: 'Analytics',
+          description: 'Summarize Meta, Google, and email KPIs. Highlight insights and next steps.',
+          channel: 'GA4, Meta Ads, Email',
+          dueDate: offset(1),
+          priority: 'High',
+          status: 'In Progress',
+          createdAt: Date.now() - 1800_000
+        },
+        {
+          id: 'demo5',
+          title: 'Reactivation email for cold subscribers',
+          category: 'Email',
+          description: 'Win-back flow for 90-day inactive list. Include incentive and preference center link.',
+          channel: 'Email',
+          dueDate: offset(5),
+          priority: 'Medium',
+          status: 'Backlog',
+          createdAt: Date.now() - 2600_000
+        },
+        {
+          id: 'demo6',
+          title: 'Schedule social posts for product launch day',
+          category: 'Social Media',
+          description: 'Coordinate launch messaging across IG, TikTok, and LinkedIn. Include UTM tracking.',
+          channel: 'IG, TikTok, LinkedIn',
+          dueDate: offset(2),
+          priority: 'High',
+          status: 'Backlog',
+          createdAt: Date.now() - 3000_000
+        }
+      ];
+      saveTasks();
+      renderTasks();
+    });
+
+    loadTasks();
+    renderTasks();
+  </script>
+</body>
+</html>
